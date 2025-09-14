@@ -1,47 +1,66 @@
-// A URL agora aponta para o IP do seu servidor local
-const API_URL = 'http://192.168.1.100:3000/ordens-servico'; // Exemplo de IP local
+/**
+ * script.js (Para o formulário de submissão - index.html)
+ * * Responsável por:
+ * - Capturar os dados do formulário de Ordem de Serviço.
+ * - Enviar os dados (incluindo a foto) para a API do backend.
+ * - Exibir feedback de sucesso/erro para o usuário com base na resposta do servidor.
+ */
 
+// --- CONFIGURAÇÃO ---
+const API_URL = 'http://localhost:3000/ordens-servico';
+
+// --- SELEÇÃO DOS ELEMENTOS DO DOM ---
 const form = document.getElementById('os-form');
-// ... resto das seleções
+const submitButton = form.querySelector('button[type="submit"]');
+const feedbackMessage = document.getElementById('feedback-message');
 
+// --- EVENT LISTENER PRINCIPAL ---
 form.addEventListener('submit', async (event) => {
     event.preventDefault();
 
-    // 1. Em vez de criar um objeto JSON, criamos um FormData
-    const formData = new FormData();
+    submitButton.disabled = true;
+    submitButton.textContent = 'Enviando, aguarde...';
+    feedbackMessage.style.display = 'none';
 
-    // 2. Adicionamos os valores dos campos e o arquivo ao FormData
-    formData.append('equipamento', document.getElementById('equipamento').value);
-    formData.append('localizacao', document.getElementById('localizacao').value);
-    formData.append('descricao_problema', document.getElementById('descricao_problema').value);
-    formData.append('solicitante_nome', document.getElementById('solicitante').value);
+    const formData = new FormData(form);
 
     const fotoInput = document.getElementById('foto_defeito');
-    if (fotoInput.files.length > 0) {
-        formData.append('foto_defeito', fotoInput.files[0]);
-    } else {
-        // Validação simples para garantir que um arquivo foi enviado
-        alert('Por favor, anexe uma foto do defeito.');
+    if (fotoInput.files.length === 0) {
+        feedbackMessage.textContent = 'Erro: Por favor, anexe uma foto do defeito.';
+        feedbackMessage.className = 'error';
+        feedbackMessage.style.display = 'block';
+
+        submitButton.disabled = false;
+        submitButton.textContent = 'Abrir Ordem de Serviço';
         return;
     }
 
-    const submitButton = form.querySelector('button');
-    submitButton.disabled = true;
-    submitButton.textContent = 'Enviando...';
-
     try {
-        // 3. Enviamos o objeto FormData diretamente no corpo do fetch
-        // IMPORTANTE: NÃO defina o header 'Content-Type'. O navegador fará isso por você.
         const response = await fetch(API_URL, {
             method: 'POST',
             body: formData
         });
 
-        // O resto do código para tratar a resposta (sucesso/erro) continua o mesmo...
+        const result = await response.json();
+
+        if (response.ok) { // Status 201 Created
+            // Usa o 'numero_os' retornado pelo servidor na mensagem de sucesso
+            feedbackMessage.textContent = `Sucesso! Ordem de Serviço #${result.numero_os} foi aberta.`;
+            feedbackMessage.className = 'success';
+            form.reset();
+        } else { // Status 4xx ou 5xx
+            feedbackMessage.textContent = `Erro: ${result.message || 'Não foi possível abrir a O.S.'}`;
+            feedbackMessage.className = 'error';
+        }
 
     } catch (error) {
-        // ...
+        console.error('Falha na comunicação com a API:', error);
+        feedbackMessage.textContent = 'Erro de conexão. Verifique se o servidor está online e sua conexão com a rede.';
+        feedbackMessage.className = 'error';
+
     } finally {
-        // ...
+        feedbackMessage.style.display = 'block';
+        submitButton.disabled = false;
+        submitButton.textContent = 'Abrir Ordem de Serviço';
     }
 });

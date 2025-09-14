@@ -1,19 +1,83 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Nova Ordem de Serviço - Manutenção</title>
+    <link rel="stylesheet" href="style.css">
 </head>
+
 <body>
-    <form id="os-form" enctype="multipart/form-data">
-    
-        <label for="descricao_problema">Descrição do Problema:</label>
-        <textarea id="descricao_problema" name="descricao_problema" rows="5" required></textarea>
-    
-        <label for="foto_defeito">Foto do Defeito (Obrigatório):</label>
-        <input type="file" id="foto_defeito" name="foto_defeito" accept="image/*" required>
-    
-    </form>
+    <main>
+        <h1>Abertura de Ordem de Serviço</h1>
+        <p>Preencha todos os campos obrigatórios (*) para solicitar um reparo.</p>
+
+        <form id="os-form" enctype="multipart/form-data">
+
+            <fieldset>
+                <legend>Identificação do Solicitante</legend>
+
+                <label for="solicitante_nome">Seu Nome Completo *</label>
+                <input type="text" id="solicitante_nome" name="solicitante_nome" placeholder="Digite seu nome" required>
+
+                <label for="solicitante_setor">Seu Setor/Departamento *</label>
+                <input type="text" id="solicitante_setor" name="solicitante_setor"
+                    placeholder="Ex: Produção, Almoxarifado" required>
+            </fieldset>
+
+            <fieldset>
+                <legend>Detalhes do Equipamento e Problema</legend>
+
+                <label for="equipamento_tag">TAG ou ID do Equipamento *</label>
+                <input type="text" id="equipamento_tag" name="equipamento_tag"
+                    placeholder="Ex: PR-01, TORNO-03, CALD-05" required>
+
+                <label for="localizacao">Localização Específica do Equipamento *</label>
+                <input type="text" id="localizacao" name="localizacao" placeholder="Ex: Galpão 2, ao lado da coluna B5"
+                    required>
+
+                <label for="data_ocorrencia">Data em que o problema ocorreu *</label>
+                <input type="date" id="data_ocorrencia" name="data_ocorrencia" required>
+
+                <label for="descricao_problema">Descrição Detalhada do Problema *</label>
+                <textarea id="descricao_problema" name="descricao_problema" rows="6"
+                    placeholder="Descreva o que aconteceu, ruídos, falhas, códigos de erro, etc." required></textarea>
+            </fieldset>
+
+            <fieldset>
+                <legend>Prioridade e Status da Operação</legend>
+
+                <label for="prioridade">Nível de Prioridade *</label>
+                <select id="prioridade" name="prioridade" required>
+                    <option value="" disabled selected>-- Selecione a urgência --</option>
+                    <option value="media">Média (Pode aguardar planejamento)</option>
+                    <option value="alta">Alta (Afeta a produção, mas há alternativas)</option>
+                    <option value="critica">Crítica (Risco de segurança ou parada geral)</option>
+                </select>
+
+                <label>O equipamento está parado? *</label>
+                <div class="radio-group">
+                    <input type="radio" id="maquina_sim" name="maquina_parada" value="sim" required>
+                    <label for="maquina_sim">Sim</label>
+                    <input type="radio" id="maquina_nao" name="maquina_parada" value="nao" checked>
+                    <label for="maquina_nao">Não</label>
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Evidência Visual</legend>
+                <label for="foto_defeito">Anexe uma Foto ou Vídeo do Defeito *</label>
+                <input type="file" id="foto_defeito" name="foto_defeito" accept="image/*,video/*" required>
+            </fieldset>
+
+            <button type="submit">Abrir Ordem de Serviço</button>
+        </form>
+
+        <div id="feedback-message"></div>
+    </main>
+
+    <script src="script.js"></script>
 </body>
+
 </html>
